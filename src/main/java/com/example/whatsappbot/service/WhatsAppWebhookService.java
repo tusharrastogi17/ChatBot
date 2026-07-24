@@ -43,7 +43,7 @@ public class WhatsAppWebhookService {
         this.phoneNumberId = phoneNumberId;
         this.objectMapper = objectMapper;
         this.restClient = restClientBuilder
-                .baseUrl("https://graph.facebook.com/v20.0")
+                .baseUrl("https://graph.facebook.com/v25.0")
                 .defaultHeader("Authorization", "Bearer " + accessToken)
                 .defaultHeader("Content-Type", "application/json")
                 .build();

@@ -1,0 +1,89 @@
+========================================================================
+                      WHATSAPP CHATBOT ARCHITECTURE
+========================================================================
+
+This document explains the high-level architecture of the WhatsApp Chatbot
+Spring Boot application and provides details about the test suite.
+
+------------------------------------------------------------------------
+1. HIGH-LEVEL ARCHITECTURE OVERVIEW
+------------------------------------------------------------------------
+
+The application is a webhook receiver and message sender for Meta's WhatsApp 
+Business Cloud API. It consists of the following components:
+
+- entrypoint: WhatsAppBotApplication.java
+  The main Spring Boot startup class.
+
+- Controller: WhatsAppWebhookController.java
+  Exposes the REST API endpoints to receive requests from Meta:
+  - GET /webhook: Subscription verification. Verifies the hub.verify_token 
+    sent by Meta and returns hub.challenge to confirm the webhook connection.
+  - POST /webhook: Event notification. Receives incoming message events, 
+    parses them, and triggers auto-replies.
+
+- Service: WhatsAppWebhookService.java
+  Implements the core business logic:
+  - Verifies the incoming webhook verify_token.
+  - Uses Jackson's ObjectMapper to parse the incoming event JSON payload and 
+    extract the sender's phone number and the text of the message.
+  - Configures a Spring RestClient that connects to Meta's Graph API 
+    (https://graph.facebook.com/v20.0) to send reply messages.
+
+- Configuration: application.properties & .env
+  Environment variable settings mapping WhatsApp credentials:
+  - WHATSAPP_ACCESS_TOKEN: Meta Authorization Bearer Token.
+  - WHATSAPP_PHONE_NUMBER_ID: Sender phone number ID from Meta developer panel.
+  - WHATSAPP_VERIFY_TOKEN: Webhook challenge verification string.
+
+- Deployment: Dockerfile
+  Multi-stage build that:
+  1. Builds the Spring Boot fat JAR using Maven (JDK 21).
+  2. Runs the jar in a lightweight JRE container on port 8080 (ready for Render).
+
+------------------------------------------------------------------------
+2. WEBHOOK INCOMING EVENT PARSING FLOW
+------------------------------------------------------------------------
+
+When a user messages the WhatsApp number:
+1. Meta sends a POST request with a JSON payload to:
+   https://your-domain.render.com/webhook
+2. The controller captures this request and calls the service.
+3. The service parses the JSON tree:
+   entry[] -> changes[] -> value -> messages[]
+4. If a text message is found:
+   - Extract the sender's wa_id/phone number from "from".
+   - Extract message body from "text.body".
+   - Calls Meta's outgoing API: POST /v20.0/{phoneNumberId}/messages 
+     to send a response (e.g., "Hello! I received your message: ...").
+
+------------------------------------------------------------------------
+3. TEST SUITE EXPLANATION (WhatsAppWebhookControllerTest.java)
+------------------------------------------------------------------------
+
+The test suite validates the REST endpoints of the webhook controller:
+
+- Frameworks Used:
+  - MockMvc: Simulates HTTP requests and inspects responses without starting
+    a real embedded web server (keeps tests fast and lightweight).
+  - Mockito (@MockBean): Mocks the WhatsAppWebhookService. We test the 
+    controller in isolation and don't need real credentials or active HTTP 
+    connections during the tests.
+
+- Test Cases:
+  1. testVerifyWebhook_Success:
+     - Simulates Meta's verification request (GET /webhook) with the correct 
+       verify_token.
+     - Mock service is instructed to return `true` for verification.
+     - Asserts that the controller returns an HTTP 200 OK and the challenge 
+       string.
+
+  2. testVerifyWebhook_Failure:
+     - Simulates verification request with an incorrect token.
+     - Mock service returns `false` for verification.
+     - Asserts that the controller rejects it with an HTTP 403 Forbidden status.
+
+  3. testReceiveWebhookEvent:
+     - Simulates Meta sending a POST request to /webhook with a sample JSON payload.
+     - Asserts that the controller accepts the event and returns HTTP 200 OK.
+========================================================================
