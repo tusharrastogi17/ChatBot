@@ -2,6 +2,8 @@ package com.example.whatsappbot.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -16,6 +18,8 @@ import java.util.Map;
  */
 @Service
 public class WhatsAppWebhookService {
+
+    private static final Logger log = LoggerFactory.getLogger(WhatsAppWebhookService.class);
 
     private final String verifyToken;
     private final String accessToken;
@@ -47,6 +51,14 @@ public class WhatsAppWebhookService {
                 .defaultHeader("Authorization", "Bearer " + accessToken)
                 .defaultHeader("Content-Type", "application/json")
                 .build();
+
+        // Log config at startup to verify credentials are loaded
+        log.info("=== WhatsApp Bot Config ===");
+        log.info("Phone Number ID: {}", phoneNumberId);
+        log.info("Access Token loaded: {} (length: {})",
+                accessToken != null && !accessToken.isEmpty() ? "YES" : "NO",
+                accessToken != null ? accessToken.length() : 0);
+        log.info("Verify Token loaded: {}", verifyToken != null && !verifyToken.isEmpty() ? "YES" : "NO");
     }
 
     /**
@@ -80,10 +92,14 @@ public class WhatsAppWebhookService {
                                 for (JsonNode message : messagesNode) {
                                     String from = message.path("from").asText();
                                     String type = message.path("type").asText();
+                                    log.info("Message received - from: {}, type: {}", from, type);
                                     if ("text".equals(type)) {
                                         String body = message.path("text").path("body").asText();
+                                        log.info("Text message body: '{}' - Sending reply to {}", body, from);
                                         // Send echo reply back to sender
                                         sendWhatsAppMessage(from, "Hello! I received your message: \"" + body + "\"");
+                                    } else {
+                                        log.info("Ignoring non-text message of type: {}", type);
                                     }
                                 }
                             }
@@ -105,7 +121,9 @@ public class WhatsAppWebhookService {
      */
     public void sendWhatsAppMessage(String toPhoneNumber, String textMessage) {
         if (accessToken == null || accessToken.isEmpty() || phoneNumberId == null || phoneNumberId.isEmpty()) {
-            System.out.println("WhatsApp API credentials are not configured. Message send skipped.");
+            log.error("!!! WhatsApp API credentials NOT configured - accessToken empty: {}, phoneNumberId empty: {} - SKIPPING message send !!!",
+                    accessToken == null || accessToken.isEmpty(),
+                    phoneNumberId == null || phoneNumberId.isEmpty());
             return;
         }
 
@@ -121,15 +139,15 @@ public class WhatsAppWebhookService {
         );
 
         try {
+            log.info("Sending message to {} via API endpoint /{}/messages", toPhoneNumber, phoneNumberId);
             String response = restClient.post()
                     .uri("/{phoneNumberId}/messages", phoneNumberId)
                     .body(requestBody)
                     .retrieve()
                     .body(String.class);
-            System.out.println("Reply sent successfully. API Response: " + response);
+            log.info("Reply sent successfully! API Response: {}", response);
         } catch (Exception e) {
-            System.err.println("Failed to send WhatsApp message: " + e.getMessage());
-            e.printStackTrace();
+            log.error("FAILED to send WhatsApp message to {}: {}", toPhoneNumber, e.getMessage(), e);
         }
     }
 
