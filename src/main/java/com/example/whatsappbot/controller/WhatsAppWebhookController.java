@@ -59,7 +59,7 @@ public class WhatsAppWebhookController {
      */
     @PostMapping
     public ResponseEntity<Void> receiveWebhookEvent(@RequestBody String payload) {
-        webhookService.logIncomingEvent(payload);
+        webhookService.processIncomingWebhook(payload);
         return ResponseEntity.ok().build();
     }
 }
