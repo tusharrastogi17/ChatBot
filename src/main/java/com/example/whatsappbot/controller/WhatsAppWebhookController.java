@@ -60,9 +60,8 @@ public class WhatsAppWebhookController {
     @PostMapping
     public ResponseEntity<String> receive(@RequestBody String payload) {
 
-        System.out.println("===== FACEBOOK CALLED ME =====");
-        System.out.println(payload);
+        webhookService.processIncomingWebhook(payload);
 
-        return ResponseEntity.ok("OK");
+        return ResponseEntity.ok("EVENT_RECEIVED");
     }
 }

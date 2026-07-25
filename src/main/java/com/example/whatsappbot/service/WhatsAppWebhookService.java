@@ -94,10 +94,13 @@ public class WhatsAppWebhookService {
                                     String type = message.path("type").asText();
                                     log.info("Message received - from: {}, type: {}", from, type);
                                     if ("text".equals(type)) {
-                                        String body = message.path("text").path("body").asText();
+                                        String body = message.path("text").path("body").asText().trim();
                                         log.info("Text message body: '{}' - Sending reply to {}", body, from);
-                                        // Send echo reply back to sender
-                                        sendWhatsAppMessage(from, "Hello! I received your message: \"" + body + "\"");
+                                        // Reply logic: "hi" → "hello", anything else → echo
+                                        String reply = "hi".equalsIgnoreCase(body)
+                                                ? "hello"
+                                                : "Hello! I received your message: \"" + body + "\"";
+                                        sendWhatsAppMessage(from, reply);
                                     } else {
                                         log.info("Ignoring non-text message of type: {}", type);
                                     }

@@ -76,6 +76,7 @@ class WhatsAppWebhookControllerTest {
         mockMvc.perform(post("/webhook")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string("EVENT_RECEIVED"));
     }
 }
