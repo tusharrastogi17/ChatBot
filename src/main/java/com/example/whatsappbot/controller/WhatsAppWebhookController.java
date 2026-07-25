@@ -42,7 +42,7 @@ public class WhatsAppWebhookController {
     // Incoming Messages (POST)
     @PostMapping
     public ResponseEntity<String> receive(@RequestBody Map<String, Object> payload) {
-        webhookService.processIncomingWebhook(payload);
+        java.util.concurrent.CompletableFuture.runAsync(() -> webhookService.processIncomingWebhook(payload));
         return ResponseEntity.ok("EVENT_RECEIVED");
     }
 }

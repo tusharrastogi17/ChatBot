@@ -50,16 +50,51 @@ public class WhatsAppWebhookService {
             if (value.containsKey("messages")) {
                 List<Map<String, Object>> messages = (List<Map<String, Object>>) value.get("messages");
                 if (messages != null && !messages.isEmpty()) {
-                    Map<String, Object> message = messages.get(0);
-                    String senderPhone = (String) message.get("from");
+                    for (Map<String, Object> message : messages) {
+                        String senderPhone = (String) message.get("from");
 
-                    Map<String, Object> textObj = (Map<String, Object>) message.get("text");
-                    String incomingText = textObj != null ? (String) textObj.get("body") : "";
+                        Map<String, Object> textObj = (Map<String, Object>) message.get("text");
+                        String incomingText = textObj != null ? (String) textObj.get("body") : "";
 
-                    if ("hi".equalsIgnoreCase(incomingText.trim())) {
-                        sendWhatsAppMessage(senderPhone, "hello");
-                    } else if (!incomingText.isEmpty()) {
-                        sendWhatsAppMessage(senderPhone, "Hello! I received your message: \"" + incomingText + "\"");
+                        String trimmedText = incomingText.trim().toLowerCase();
+                        String reply;
+
+                        switch (trimmedText) {
+                            case "hi":
+                            case "hello":
+                            case "hey":
+                                reply = "Hello! 👋 Welcome to WhatsApp Bot. How can I help you today?";
+                                break;
+                            case "help":
+                            case "menu":
+                                reply = """
+                                    🤖 *WhatsApp Bot Menu*:
+                                    • Type *hi* or *hello* - Greet the bot
+                                    • Type *time* - Get current server time
+                                    • Type *info* - Get bot details
+                                    • Or send any message and I will assist you!
+                                    """;
+                                break;
+                            case "time":
+                                reply = "⏰ Current time: " + java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+                                break;
+                            case "info":
+                                reply = "ℹ️ I am a Spring Boot WhatsApp Bot running on Java 17!";
+                                break;
+                            case "bye":
+                            case "goodbye":
+                                reply = "Goodbye! 👋 Have a wonderful day!";
+                                break;
+                            default:
+                                if (!incomingText.isEmpty()) {
+                                    reply = "🤖 I received: \"" + incomingText + "\". Type *help* to see what I can do!";
+                                } else {
+                                    reply = "Hello! How can I assist you?";
+                                }
+                                break;
+                        }
+
+                        sendWhatsAppMessage(senderPhone, reply);
                     }
                 }
             }
@@ -76,6 +111,12 @@ public class WhatsAppWebhookService {
         headers.setBearerAuth(accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        String escapedResponse = textResponse == null ? "" : textResponse
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r");
+
         String body = """
             {
               "messaging_product": "whatsapp",
@@ -84,7 +125,7 @@ public class WhatsAppWebhookService {
               "type": "text",
               "text": { "body": "%s" }
             }
-            """.formatted(to, textResponse);
+            """.formatted(to, escapedResponse);
 
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
