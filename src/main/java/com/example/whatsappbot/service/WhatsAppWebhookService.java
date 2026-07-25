@@ -1,7 +1,10 @@
 package com.example.whatsappbot.service;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -19,11 +22,6 @@ public class WhatsAppWebhookService {
     private String accessToken;
 
     private final RestTemplate restTemplate = new RestTemplate();
-
-    public boolean verifyToken(String token) {
-        // Fallback verify method if needed by service callers
-        return token != null;
-    }
 
     public void processIncomingWebhook(Map<String, Object> payload) {
         try {
