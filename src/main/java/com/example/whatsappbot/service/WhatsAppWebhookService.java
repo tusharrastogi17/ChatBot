@@ -149,8 +149,15 @@ public class WhatsAppWebhookService {
                     .retrieve()
                     .body(String.class);
             log.info("Reply sent successfully! API Response: {}", response);
+        } catch (org.springframework.web.client.HttpClientErrorException e) {
+            log.error("META API ERROR (ClientError): {}", e.getResponseBodyAsString(), e);
+            System.out.println("META API ERROR: " + e.getResponseBodyAsString());
+        } catch (org.springframework.web.client.RestClientResponseException e) {
+            log.error("META API ERROR (ResponseError): {}", e.getResponseBodyAsString(), e);
+            System.out.println("META API ERROR: " + e.getResponseBodyAsString());
         } catch (Exception e) {
             log.error("FAILED to send WhatsApp message to {}: {}", toPhoneNumber, e.getMessage(), e);
+            System.out.println("GENERAL ERROR: " + e.getMessage());
         }
     }
 
