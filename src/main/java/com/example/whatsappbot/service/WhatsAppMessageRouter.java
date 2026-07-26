@@ -87,7 +87,7 @@ public class WhatsAppMessageRouter {
                 """
                     📞 *Contact Information*
 
-                    Email: your@email.com
+                    Email: tushar@email.com
                     Website: https://parivaar-5ef19.web.app
                     
                     Thank you for contacting us!
