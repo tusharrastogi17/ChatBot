@@ -22,7 +22,8 @@ public class WhatsAppMessageRouter {
 
         return switch (trimmedText) {
             // Greeting
-            case "hi", "hello", "hey", "start", "welcome" -> """
+            case "hi", "hello", "hey", "start", "welcome" ->
+                """
                     %s! 👋 Welcome to *My WhatsApp Bot*!
 
                     Please choose an option by sending the number:
@@ -37,7 +38,8 @@ public class WhatsAppMessageRouter {
                     """.formatted(timeGreeting);
 
             // Option 1
-            case "1", "one", "about", "about me" -> """
+            case "1", "one", "about", "about me" ->
+                """
                     👨\u200D💻 *About Me*
 
                     Hello!
@@ -62,12 +64,13 @@ public class WhatsAppMessageRouter {
 
             // Option 3
             case "3", "three", "time", "clock" ->
-                    "⏰ Current Server Time: " +
-                    java.time.LocalTime.now()
-                            .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+                "⏰ Current Server Time: "
+                + java.time.LocalTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
 
             // Option 4
-            case "4", "four", "help", "menu", "support" -> """
+            case "4", "four", "help", "menu", "support" ->
+                """
                     📋 *Main Menu*
 
                     1️⃣ About Me
@@ -80,17 +83,18 @@ public class WhatsAppMessageRouter {
                     """;
 
             // Option 5
-            case "5", "five", "contact" -> """
+            case "5", "five", "contact" ->
+                """
                     📞 *Contact Information*
 
                     Email: your@email.com
-                    Website: https://yourwebsite.com
-
+                    Website: https://parivaar-5ef19.web.app
+                    
                     Thank you for contacting us!
                     """;
 
             case "bye", "goodbye", "exit", "stop" ->
-                    "👋 Thank you for chatting with us. Have a wonderful day!";
+                "👋 Thank you for chatting with us. Have a wonderful day!";
 
             default -> {
                 if (incomingText.isEmpty()) {
