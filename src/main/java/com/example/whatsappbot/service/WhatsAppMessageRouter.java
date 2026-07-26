@@ -1,9 +1,20 @@
 package com.example.whatsappbot.service;
 
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class WhatsAppMessageRouter {
+
+    private final RestTemplate restTemplate;
+
+    public WhatsAppMessageRouter() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(90000); // 90 seconds connect timeout
+        factory.setReadTimeout(90000);    // 90 seconds read timeout
+        this.restTemplate = new RestTemplate(factory);
+    }
 
     public String getResponse(String trimmedText, String incomingText) {
         int hour = java.time.LocalTime.now().getHour();
@@ -40,19 +51,14 @@ public class WhatsAppMessageRouter {
                     """;
 
             // Option 2
-            case "2", "two", "parivaar", "family" -> """
-                    👨\u200D👩\u200D👧\u200D👦 *Parivaar*
-
-                    Parivaar is a Family Relationship Management System.
-
-                    Features:
-                    ✅ Build your family tree
-                    ✅ Find relationships
-                    ✅ Add family members
-                    ✅ Visualize complete family hierarchy
-
-                    🚀 More exciting features coming soon!
-                    """;
+            case "2", "two", "parivaar", "family" -> {
+                try {
+                    String healthStatus = restTemplate.getForObject("https://parivaar-1b1m.onrender.com/pariVaar/health", String.class);
+                    yield "👨\u200D👩\u200D👧\u200D👦 *Parivaar System Status*:\n" + (healthStatus != null ? healthStatus.trim() : "No status response") + " ✅";
+                } catch (Exception e) {
+                    yield "👨\u200D👩\u200D👧\u200D👦 *Parivaar System Status*:\n⚠️ Offline / Error reaching service.";
+                }
+            }
 
             // Option 3
             case "3", "three", "time", "clock" ->
