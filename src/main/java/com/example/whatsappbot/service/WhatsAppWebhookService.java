@@ -63,7 +63,8 @@ public class WhatsAppWebhookService {
 
                         String reply = switch (trimmedText) {
                             // Greeting
-                            case "hi", "hello", "hey", "start", "welcome" -> """
+                            case "hi", "hello", "hey", "start", "welcome" ->
+                                """
                                     %s! 👋 Welcome to *My WhatsApp Bot*!
 
                                     Please choose an option by sending the number:
@@ -78,7 +79,8 @@ public class WhatsAppWebhookService {
                                     """.formatted(timeGreeting);
 
                             // Option 1
-                            case "1", "one", "about", "about me" -> """
+                            case "1", "one", "about", "about me" ->
+                                """
                                     👨\u200D💻 *About Me*
 
                                     Hello!
@@ -86,13 +88,14 @@ public class WhatsAppWebhookService {
                                     ✅ Java
                                     ✅ Spring Boot
                                     ✅ REST APIs
-                                    ✅ Microservices
+                                    ✅ Microservicex
 
                                     Happy to connect with you!
                                     """;
 
                             // Option 2
-                            case "2", "two", "parivaar", "family" -> """
+                            case "2", "two", "parivaar", "family" ->
+                                """
                                     👨\u200D👩\u200D👧\u200D👦 *Parivaar*
 
                                     Parivaar is a Family Relationship Management System.
@@ -108,12 +111,13 @@ public class WhatsAppWebhookService {
 
                             // Option 3
                             case "3", "three", "time", "clock" ->
-                                    "⏰ Current Server Time: " +
-                                    java.time.LocalTime.now()
-                                            .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+                                "⏰ Current Server Time: "
+                                + java.time.LocalTime.now()
+                                .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
 
                             // Option 4
-                            case "4", "four", "help", "menu", "support" -> """
+                            case "4", "four", "help", "menu", "support" ->
+                                """
                                     📋 *Main Menu*
 
                                     1️⃣ About Me
@@ -126,7 +130,8 @@ public class WhatsAppWebhookService {
                                     """;
 
                             // Option 5
-                            case "5", "five", "contact" -> """
+                            case "5", "five", "contact" ->
+                                """
                                     📞 *Contact Information*
 
                                     Email: your@email.com
@@ -136,7 +141,7 @@ public class WhatsAppWebhookService {
                                     """;
 
                             case "bye", "goodbye", "exit", "stop" ->
-                                    "👋 Thank you for chatting with us. Have a wonderful day!";
+                                "👋 Thank you for chatting with us. Have a wonderful day!";
 
                             default -> {
                                 if (incomingText.isEmpty()) {
