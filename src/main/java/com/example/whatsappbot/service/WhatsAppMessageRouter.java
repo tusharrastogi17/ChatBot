@@ -24,105 +24,180 @@ public class WhatsAppMessageRouter {
             // Greeting
             case "hi", "hello", "hey", "start", "welcome" ->
                 """
-                    %s! 👋 Welcome to *My WhatsApp Bot*!
+                ╔═════════════════════════════════╗
+                ║   🤖 *PARIVAAR ASSISTANT* 🤖   ║
+                ╚═════════════════════════════════╝
+                %s! 👋 Welcome to our bot.
 
-                    Please choose an option by sending the number:
+                > 1️⃣  *About Me*
+                >     └─ _Developer Profile & Tech Stack_
+                >
+                > 2️⃣  *Parivaar Status*
+                >     └─ _Live System Health Check_
+                >
+                > 3️⃣  *Current Time*
+                >     └─ _Server Clock & Timestamp_
+                >
+                > 4️⃣  *Help & Info*
+                >     └─ _Bot Navigation & Options_
+                >
+                > 5️⃣  *Contact Us*
+                >     └─ _Email, Web & Support_
 
-                    1️⃣ About Me
-                    2️⃣ Parivaar 👨\u200D👩\u200D👧\u200D👦
-                    3️⃣ Current Time ⏰
-                    4️⃣ Help ❓
-                    5️⃣ Contact 📞
-
-                    Just reply with *1*, *2*, *3*, *4* or *5*.
-                    """.formatted(timeGreeting);
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                💡 *Quick Action:* Reply with *1*, *2*, *3*, *4*, or *5*.
+                """.formatted(timeGreeting);
 
             // Option 1
             case "1", "one", "about", "about me" ->
                 """
-                    👨\u200D💻 *About Me*
+                ┌─────────────────────────────────┐
+                │  👨‍💻 *ABOUT THE DEVELOPER*     │
+                └─────────────────────────────────┘
+                > Hello! I am a Java Backend Developer specializing in building high-performance APIs and scalable cloud applications.
+                >
+                > 🚀 *Core Technical Stack:*
+                >   🔹 *Java & Core Concepts*
+                >   🔹 *Spring Boot Framework*
+                >   🔹 *RESTful API Architecture*
+                >   🔹 *Microservices & Cloud Services*
+                >
+                > 🤝 _Open for collaboration and networking!_
 
-                    Hello!
-                    I am a Java Backend Developer with experience in:
-                    ✅ Java
-                    ✅ Spring Boot
-                    ✅ REST APIs
-                    ✅ Microservicex
-
-                    Happy to connect with you!
-                    """;
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                💡 _Reply *4* anytime for Main Menu._
+                """;
 
             // Option 2
             case "2", "two", "parivaar", "family" -> {
                 try {
                     String healthStatus = restTemplate.getForObject("https://parivaar-1b1m.onrender.com/pariVaar/health", String.class);
-                    yield "👨\u200D👩\u200D👧\u200D👦 *Parivaar System Status*:\n" + (healthStatus != null ? healthStatus.trim() : "No status response") + " ✅";
+                    String statusText = (healthStatus != null ? healthStatus.trim() : "No status response") + " ✅";
+                    yield """
+                        ┌─────────────────────────────────┐
+                        │  👨‍👩‍👧‍👦 *PARIVAAR SYSTEM STATUS*    │
+                        └─────────────────────────────────┘
+                        > 📡 *Live Status Check:*
+                        > `%s`
+                        >
+                        > 🟢 *Service Health:* Operational
+
+                        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                        💡 _Reply *4* anytime for Main Menu._
+                        """.formatted(statusText);
                 } catch (Exception e) {
-                    yield "👨\u200D👩\u200D👧\u200D👦 *Parivaar System Status*:\n⚠️ Offline / Error reaching service.";
+                    yield """
+                        ┌─────────────────────────────────┐
+                        │  👨‍👩‍👧‍👦 *PARIVAAR SYSTEM STATUS*    │
+                        └─────────────────────────────────┘
+                        > 📡 *Live Status Check:*
+                        > ⚠️ *Offline / Unreachable*
+                        >
+                        > 🔴 *Service Health:* Connection Error
+
+                        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                        💡 _Reply *4* anytime for Main Menu._
+                        """;
                 }
             }
 
             // Option 3
-            case "3", "three", "time", "clock" ->
-                "⏰ Current Server Time: "
-                + java.time.LocalTime.now()
-                .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+            case "3", "three", "time", "clock" -> {
+                String formattedTime = java.time.LocalTime.now()
+                        .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+                yield """
+                    ┌─────────────────────────────────┐
+                    │  ⏰ *SERVER CLOCK & TIMESTAMP*  │
+                    └─────────────────────────────────┘
+                    > 🕐 *Current Server Time:*
+                    > `%s`
+                    >
+                    > 🌍 *Timezone:* System Standard
+
+                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    💡 _Reply *4* anytime for Main Menu._
+                    """.formatted(formattedTime);
+            }
 
             // Option 4
             case "4", "four", "help", "menu", "support" ->
                 """
-                    📋 *Main Menu*
+                ┌─────────────────────────────────┐
+                │  📋 *NAVIGATION & HELP MENU*    │
+                └─────────────────────────────────┘
+                > Please reply with a number (*1* - *5*):
+                >
+                >   1️⃣  *About Me* — Developer Bio & Tech Stack
+                >   2️⃣  *Parivaar* — Live System Health Status
+                >   3️⃣  *Clock* — Server Time & Timestamp
+                >   4️⃣  *Help* — Navigation & Usage Guide
+                >   5️⃣  *Contact* — Email & Web Details
 
-                    1️⃣ About Me
-                    2️⃣ Parivaar
-                    3️⃣ Current Time
-                    4️⃣ Help
-                    5️⃣ Contact
-
-                    Reply with the option number.
-                    """;
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                💬 _Need assistance? Simply reply with a number._
+                """;
 
             // Option 5
             case "5", "five", "contact" ->
                 """
-                    📞 *Contact Information*
+                ┌─────────────────────────────────┐
+                │  📞 *CONTACT INFORMATION*       │
+                └─────────────────────────────────┘
+                > Feel free to connect via:
+                >
+                >   📧 *Email:* `gmail@email.com`
+                >   🌐 *Website:* https://parivaar-5ef19.web.app
+                >
+                > 💬 _We're happy to answer any questions!_
 
-                    Email: gmail@email.com
-                    Website: https://parivaar-5ef19.web.app
-                    
-                    Thank you for contacting us!
-                    """;
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                💡 _Reply *4* anytime for Main Menu._
+                """;
 
             case "bye", "goodbye", "exit", "stop" ->
-                "👋 Thank you for chatting with us. Have a wonderful day!";
+                """
+                ┌─────────────────────────────────┐
+                │  👋 *THANK YOU FOR CHATTING*    │
+                └─────────────────────────────────┘
+                > Thank you for using Parivaar Bot! 🌟
+                > Have a wonderful day ahead!
+                """;
 
             default -> {
                 if (incomingText.isEmpty()) {
                     yield """
-                            👋 Welcome to *My WhatsApp Bot*!
+                        ╔═════════════════════════════════╗
+                        ║   🤖 *PARIVAAR ASSISTANT* 🤖   ║
+                        ╚═════════════════════════════════╝
+                        👋 Welcome!
 
-                            Please choose an option by sending the number:
+                        > 1️⃣  *About Me*
+                        > 2️⃣  *Parivaar Status*
+                        > 3️⃣  *Current Time*
+                        > 4️⃣  *Help & Main Menu*
+                        > 5️⃣  *Contact Us*
 
-                            1️⃣ About Me
-                            2️⃣ Parivaar 👨\u200D👩\u200D👧\u200D👦
-                            3️⃣ Current Time ⏰
-                            4️⃣ Help ❓
-                            5️⃣ Contact 📞
-
-                            Just reply with *1*, *2*, *3*, *4* or *5*.
-                            """;
+                        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                        💡 _Reply with a number (*1* to *5*)._
+                        """;
                 } else {
                     yield """
-                            ❌ Invalid option.
+                        ┌─────────────────────────────────┐
+                        │  ⚠️ *UNRECOGNIZED COMMAND*      │
+                        └─────────────────────────────────┘
+                        > Sorry, I didn't recognize that command.
+                        >
+                        > Please choose from the valid options below:
+                        >
+                        >   1️⃣  *About Me*
+                        >   2️⃣  *Parivaar Status*
+                        >   3️⃣  *Current Time*
+                        >   4️⃣  *Help & Main Menu*
+                        >   5️⃣  *Contact Us*
 
-                            Please choose one of the following:
-
-                            1️⃣ About Me
-                            2️⃣ Parivaar 👨\u200D👩\u200D👧\u200D👦
-                            3️⃣ Current Time ⏰
-                            4️⃣ Help ❓
-                            5️⃣ Contact 📞
-                            """;
+                        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                        💡 _Reply with a number (*1* to *5*)._
+                        """;
                 }
             }
         };
