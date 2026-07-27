@@ -131,13 +131,6 @@ public class WhatsAppMessageRouter {
                 } else {
                     yield """
                         Unrecognized command. Please choose from the options below:
-
-                        1. About Me
-                        2. Parivaar Status
-                        3. Current Time
-                        4. Help & Info
-                        5. Contact Us
-
                         Reply with a number (1 to 5).
                         """;
                 }
